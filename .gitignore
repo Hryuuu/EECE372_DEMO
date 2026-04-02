@@ -1,0 +1,5 @@
+Makefile
+openocd/
+*.bin
+*.elf
+*.o
