@@ -21,11 +21,13 @@ static void default_handler(void)
 }
 
 void Reset_Handler(void);
-void NMI_Handler(void)       __attribute__((weak, alias("default_handler")));
-void HardFault_Handler(void) __attribute__((weak, alias("default_handler")));
-void SVC_Handler(void)       __attribute__((weak, alias("default_handler")));
-void PendSV_Handler(void)    __attribute__((weak, alias("default_handler")));
-void SysTick_Handler(void)   __attribute__((weak, alias("default_handler")));
+void NMI_Handler(void)          __attribute__((weak, alias("default_handler")));
+void HardFault_Handler(void)    __attribute__((weak, alias("default_handler")));
+void SVC_Handler(void)          __attribute__((weak, alias("default_handler")));
+void PendSV_Handler(void)       __attribute__((weak, alias("default_handler")));
+void SysTick_Handler(void)      __attribute__((weak, alias("default_handler")));
+void INT_GROUP0_Handler(void)   __attribute__((weak, alias("default_handler")));
+void GPIOA_IRQHandler(void)     __attribute__((weak, alias("default_handler")));
 
 /* Interrupt vector table — must be placed at the very start of FLASH.
    ARM Cortex-M hardware reads [0] for the initial stack pointer
@@ -49,6 +51,8 @@ void (*const vector_table[])(void) = {
     0,                           /* [13] reserved */
     PendSV_Handler,              /* [14] pendable service call */
     SysTick_Handler,             /* [15] system tick timer */
+    INT_GROUP0_Handler,           /* [16] INT_GROUP0 */
+    GPIOA_IRQHandler,             /* [17] IRQ1: GPIO0 */
 };
 
 /* Reset_Handler: sets up the C runtime environment, then calls main().
