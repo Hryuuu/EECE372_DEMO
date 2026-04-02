@@ -28,10 +28,19 @@ void PendSV_Handler(void)       __attribute__((weak, alias("default_handler")));
 void SysTick_Handler(void)      __attribute__((weak, alias("default_handler")));
 void INT_GROUP0_Handler(void)   __attribute__((weak, alias("default_handler")));
 void GPIOA_IRQHandler(void)     __attribute__((weak, alias("default_handler")));
+void TIMG8_IRQHandler(void)     __attribute__((weak, alias("default_handler")));
+void ADC0_IRQHandler(void)      __attribute__((weak, alias("default_handler")));
+void SPI0_IRQHandler(void)      __attribute__((weak, alias("default_handler")));
+void UART0_IRQHandler(void)     __attribute__((weak, alias("default_handler")));
+void TIMG14_IRQHandler(void)    __attribute__((weak, alias("default_handler")));
+void TIMA0_IRQHandler(void)     __attribute__((weak, alias("default_handler")));
+void I2C0_IRQHandler(void)      __attribute__((weak, alias("default_handler")));
+void DMA_IRQHandler(void)       __attribute__((weak, alias("default_handler")));
 
 /* Interrupt vector table — must be placed at the very start of FLASH.
    ARM Cortex-M hardware reads [0] for the initial stack pointer
    and [1] for the reset entry point on every reset.
+   Peripheral IRQs start at index 16 (exception 16).
    Ref: MSPM0 C-series Microcontroller TRM, page 214. */
 __attribute__((section(".isr_vector")))
 void (*const vector_table[])(void) = {
@@ -51,8 +60,38 @@ void (*const vector_table[])(void) = {
     0,                           /* [13] reserved */
     PendSV_Handler,              /* [14] pendable service call */
     SysTick_Handler,             /* [15] system tick timer */
-    INT_GROUP0_Handler,           /* [16] IRQ0: INT_GROUP0 */
-    GPIOA_IRQHandler,             /* [17] IRQ1: GPIO0 */
+    INT_GROUP0_Handler,          /* [16] IRQ0: INT_GROUP0 */
+    GPIOA_IRQHandler,            /* [17] IRQ1: GPIO0 */
+    TIMG8_IRQHandler,            /* [18] IRQ2: TIMG8 */
+    0,                           /* [19] IRQ3: reserved */
+    ADC0_IRQHandler,             /* [20] IRQ4: ADC0 */
+    0,                           /* [21] IRQ5: reserved */
+    0,                           /* [22] IRQ6: reserved */
+    0,                           /* [23] IRQ7: reserved */
+    0,                           /* [24] IRQ8: reserved */
+    SPI0_IRQHandler,             /* [25] IRQ9: SPI0 */
+    0,                           /* [26] IRQ10: reserved */
+    0,                           /* [27] IRQ11: reserved */
+    0,                           /* [28] IRQ12: reserved */
+    0,                           /* [29] IRQ13: reserved */
+    0,                           /* [30] IRQ14: reserved */
+    UART0_IRQHandler,            /* [31] IRQ15: UART0 */
+    TIMG14_IRQHandler,           /* [32] IRQ16: TIMG14 */
+    0,                           /* [33] IRQ17: reserved */
+    TIMA0_IRQHandler,            /* [34] IRQ18: TIMA0 */
+    0,                           /* [35] IRQ19: reserved */
+    0,                           /* [36] IRQ20: reserved */
+    0,                           /* [37] IRQ21: reserved */
+    0,                           /* [38] IRQ22: reserved */
+    0,                           /* [39] IRQ23: reserved */
+    I2C0_IRQHandler,             /* [40] IRQ24: I2C0 */
+    0,                           /* [41] IRQ25: reserved */
+    0,                           /* [42] IRQ26: reserved */
+    0,                           /* [43] IRQ27: reserved */
+    0,                           /* [44] IRQ28: reserved */
+    0,                           /* [45] IRQ29: reserved */
+    0,                           /* [46] IRQ30: reserved */
+    DMA_IRQHandler,              /* [47] IRQ31: DMA */
 };
 
 /* Reset_Handler: sets up the C runtime environment, then calls main().

@@ -29,7 +29,7 @@ Description: Toggle LED on PA22 via GPIO interrupt triggered by button press.
 //ARM Cortex-M0+ Register (TRM Table 3-2)
 #define NVIC_ISER           *(volatile uint32_t *)(0xE000E100u)
 
-static volatile uint32_t led_on=0u;
+static volatile uint8_t led_on=0u;
 
 static void MY_init(void) {
     GPIOA_PWREN = 0x26000001u;          //Enable GPIO Power (TRM Table 10-8)
