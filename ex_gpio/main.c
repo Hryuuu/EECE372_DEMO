@@ -1,7 +1,7 @@
 /*
 Name: Hanseo Ryu
 Date: 2026-4-2
-Description: 
+Description: Toggle LED on PA22 via GPIO interrupt triggered by button press.
 */
 #include <stdint.h>
 
@@ -38,12 +38,12 @@ static void MY_init(void) {
     GPIOA_DOESET31_0 = PIN_22_MASK;     //Enable PA22 as output
     GPIOA_DOUTSET31_0 = PIN_22_MASK;    //Set PA22 output high
     //Init User Button
-    IOMUX_PINCM17 = 0x00060081u;        //Configure PA16 - inputEN, Pullup, PC, PF (TRM Table 9-5)
-    GPIOA_POLARITY31_16 &= ~0x00000003u;//Clear DIO16
-    GPIOA_POLARITY31_16 |=  0x00000002u;//Falling edge
+    IOMUX_PINCM17 = 0x00060081u;        //Configure PA16 - INENA, Pullup, PC, PF (TRM Table 9-5)
+    GPIOA_POLARITY31_16 &= ~0x00000003u;//Clear polarity field for DIO16
+    GPIOA_POLARITY31_16 |=  0x00000002u;//Set falling edge trigger for DIO16
     GPIOA_ICLR = PIN_16_MASK;           //Clear any pending flag
     GPIOA_IMASK |= PIN_16_MASK;         //Enable interrupt
-    NVIC_ISER |= (1u<<1);               //Enable NVIC(IRQ1) interrupt - ARM ref.
+    NVIC_ISER |= (1u<<1);               //Enable NVIC IRQ1
 }
 
 int main(void) {
@@ -57,7 +57,7 @@ int main(void) {
 
 void GPIOA_IRQHandler(void) {
     if(GPIOA_MIS & PIN_16_MASK) {
-        GPIOA_ICLR = PIN_16_MASK;  //Interrupt clear
+        GPIOA_ICLR = PIN_16_MASK;  //Clear PA16 interrupt flag
         if(led_on) {
             GPIOA_DOUTSET31_0 = PIN_22_MASK; //LED off
             led_on=0u;
