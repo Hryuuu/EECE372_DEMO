@@ -15,16 +15,16 @@ arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
 # Link
 arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
     -T mspm0c1104.ld -nostdlib -Wl,--gc-sections \
-    startup_mspm0c1104.o main.o -o led.elf
+    startup_mspm0c1104.o main.o -o {name}.elf
 
 # Convert to raw binary
-arm-none-eabi-objcopy -O binary led.elf led.bin
+arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
 ```
 
 To flash using OpenOCD:
 
 ```sh
-openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program led.elf verify reset exit"
+openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset exit"
 ```
 
 ## mspm0c1104.ld
