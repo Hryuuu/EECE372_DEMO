@@ -1,13 +1,15 @@
 # EECE372 Bare-Metal Programming Examples
 
-Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written entirely with direct register access without DriverLib or SysConfig.
+Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written entirely with direct register access and without DriverLib or SysConfig.
 
-Written by Hanseo Ryu.
-
+Written by Hanseo Ryu  
 Contact: hsryu@postech.ac.kr
 
-- Some code was generated with Claude.
-- In such cases, it is explicitly marked in the code.
+Some code in this repository was generated with Claude. Any such sections are explicitly marked in the source.
+
+## Overview
+
+This repository contains small, self-contained examples for learning low-level embedded programming on the MSPM0C1104. The focus is on understanding the hardware directly through registers, startup code, linker scripts, interrupts, and memory layout.
 
 ## Environment Setup
 
@@ -15,7 +17,7 @@ Contact: hsryu@postech.ac.kr
 
 #### macOS
 
-Requires Homebrew:
+Homebrew is required.
 
 ```sh
 brew install arm-none-eabi-gcc
@@ -23,11 +25,13 @@ brew install arm-none-eabi-gcc
 
 #### Windows
 
-Download the appropriate installer for your system from the official Arm GNU Toolchain page, then complete the installation. You may also need to configure your `PATH` environment variable.
+Download and install the appropriate package from the official Arm GNU Toolchain page. You may also need to add the toolchain to your `PATH`.
 
 https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
 
 ### Install OpenOCD
+
+Standard OpenOCD distribution packages may not include MSPM0 support. If that is the case on your system, build OpenOCD from source using the instructions below.
 
 #### macOS
 
@@ -37,13 +41,34 @@ brew install openocd --HEAD
 
 #### Windows
 
-Follow the official installation guide. You may need to install Node.js and npm first, and you may also need to configure your environment variables.
+Install MSYS2 first, then use the MSYS `UCRT64` terminal:
 
-https://xpack-dev-tools.github.io/openocd-xpack/docs/install/
+```sh
+pacman -Syu
+pacman -S --needed \
+  git \
+  make \
+  mingw-w64-ucrt-x86_64-toolchain \
+  mingw-w64-ucrt-x86_64-autotools \
+  mingw-w64-ucrt-x86_64-pkgconf \
+  mingw-w64-ucrt-x86_64-libusb \
+  mingw-w64-ucrt-x86_64-hidapi \
+  mingw-w64-ucrt-x86_64-libftdi
 
-## How to Build
+git clone https://github.com/openocd-org/openocd.git
+cd openocd
+git submodule update --init --recursive
+./bootstrap
+./configure --enable-internal-jimtcl --enable-xds110 --enable-cmsis-dap
+make -j"$(nproc)"
+make install
 
-Run the following commands inside one of the example directories such as `ex_led/`, `ex_gpio/`, or `ex_dma/`.
+cd /c/your/project/folder/
+```
+
+## Build
+
+Run the following commands inside one of the example directories, such as `ex_led/`, `ex_gpio/`, or `ex_dma/`.
 
 ```sh
 # Compile
@@ -58,51 +83,55 @@ arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
     -T mspm0c1104.ld -nostdlib -Wl,--gc-sections \
     startup_mspm0c1104.o main.o -o {name}.elf
 
-# Convert to a raw binary
+# Convert to raw binary
 arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
 ```
 
-To flash the program with OpenOCD:
+## Flash
+
+Use OpenOCD to program the ELF file:
 
 ```sh
 openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset"
 ```
 
-## File Overview
+## Repository Structure
 
 ### `mspm0c1104.ld`
 
-This linker script defines the MSPM0C1104 memory layout: 16 KB of Flash at `0x00000000` and 1 KB of SRAM at `0x20000000`. It also places the `.isr_vector`, `.text`, `.data`, and `.bss` sections.
+The linker script defines the MSPM0C1104 memory layout: 16 KB of flash at `0x00000000` and 1 KB of SRAM at `0x20000000`. It also places the `.isr_vector`, `.text`, `.data`, and `.bss` sections.
 
 ### `startup_mspm0c1104.c`
 
-This startup file defines the interrupt vector table and `Reset_Handler`. On reset, it copies `.data` from Flash to SRAM, clears `.bss`, and then calls `main()`. Check the interrupt vector table for each example, because the required entries may differ depending on the example.
+The startup file defines the interrupt vector table and `Reset_Handler`. On reset, it copies `.data` from flash to SRAM, clears `.bss`, and then calls `main()`.
+
+Because each example may require different interrupt handlers, check the vector table in the example you are building.
 
 ## Examples
 
 - **LED** (`ex_led/`): Blinks an LED on PA22 at approximately 0.5 Hz using a busy-wait delay loop and direct GPIOA register access.
-- **GPIO** (`ex_gpio/`): Toggles the LED on PA22 whenever the button on PA16 is pressed on a falling edge, using a GPIOA interrupt (NVIC IRQ1).
-- **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer of 16 words on channel 0. The LED stays on if the transfer succeeds and blinks rapidly if verification fails.
+- **GPIO** (`ex_gpio/`): Toggles the LED on PA22 when the button on PA16 is pressed, using a falling-edge GPIOA interrupt (`NVIC IRQ1`).
+- **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer of 16 words on channel 0. The LED remains on if the transfer succeeds and blinks rapidly if verification fails.
 
-## Tips
+## Notes
 
 ### Debugging
 
-- OpenOCD can be used for a variety of debugging tasks such as setting breakpoints and inspecting memory values.
-- If OpenOCD does not work properly, build it directly from the GitHub source. Make sure to fetch and build the submodules as well.
+- OpenOCD can be used for general debugging tasks such as setting breakpoints, examining memory, and stepping through code.
+- If OpenOCD does not work as expected, build it directly from the official GitHub source and make sure the submodules are initialized.
 
 ### Document References
 
-- In the code, parts labeled `TRM` refer to the following document:
-  Texas Instruments, *MSPM0 C-Series Microcontrollers Technical Reference Manual* (2025)
+- `TRM` in the code refers to:
+  Texas Instruments, *MSPM0 C-Series Microcontrollers Technical Reference Manual* (2025)  
   https://www.ti.com/kr/lit/pdf/slau893
-- In the code, parts labeled `Datasheet` refer to the following document:
-  Texas Instruments, *MSPM0C110x, MSPS003 Mixed-Signal Microcontrollers* (2026)
+- `Datasheet` in the code refers to:
+  Texas Instruments, *MSPM0C110x, MSPS003 Mixed-Signal Microcontrollers* (2026)  
   https://www.ti.com/kr/lit/gpn/mspm0c1104
 
 ### Additional Resources
 
-- Development Guide
+- MSPM0 Development Guide  
   https://www.ti.com/kr/lit/pdf/slaaed1
-- Cortex-M0+ User Guide
+- Arm Cortex-M0+ User Guide  
   https://developer.arm.com/documentation/dui0662/latest/
