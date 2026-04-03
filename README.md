@@ -83,3 +83,26 @@ This startup file defines the interrupt vector table and `Reset_Handler`. On res
 - **LED** (`ex_led/`): Blinks an LED on PA22 at approximately 0.5 Hz using a busy-wait delay loop and direct GPIOA register access.
 - **GPIO** (`ex_gpio/`): Toggles the LED on PA22 whenever the button on PA16 is pressed on a falling edge, using a GPIOA interrupt (NVIC IRQ1).
 - **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer of 16 words on channel 0. The LED stays on if the transfer succeeds and blinks rapidly if verification fails.
+
+## Tips
+
+### Debugging
+
+- OpenOCD can be used for a variety of debugging tasks such as setting breakpoints and inspecting memory values.
+- If OpenOCD does not work properly, build it directly from the GitHub source. Make sure to fetch and build the submodules as well.
+
+### Document References
+
+- In the code, parts labeled `TRM` refer to the following document:
+  Texas Instruments, *MSPM0 C-Series Microcontrollers Technical Reference Manual* (2025)
+  https://www.ti.com/kr/lit/pdf/slau893
+- In the code, parts labeled `Datasheet` refer to the following document:
+  Texas Instruments, *MSPM0C110x, MSPS003 Mixed-Signal Microcontrollers* (2026)
+  https://www.ti.com/kr/lit/gpn/mspm0c1104
+
+### Additional Resources
+
+- Development Guide
+  https://www.ti.com/kr/lit/pdf/slaaed1
+- Cortex-M0+ User Guide
+  https://developer.arm.com/documentation/dui0662/latest/
