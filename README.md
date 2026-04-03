@@ -2,6 +2,36 @@
 
 Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written entirely with direct register access — no DriverLib or SysConfig.
 
+## Set-up Env
+
+Install arm-none-eabi-gcc
+- macOS (Homebrew 필요)
+```sh
+brew install arm-none-eabi-gcc
+```
+- Windows
+Downloads proper installiation file for your computer, and install. (May have to set up Envioment variable settings)
+https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
+
+Install openOCD
+배포판은 xds0 지원이 안되어 직접 빌드 필요
+-macOS
+```sh
+git clone https://github.com/openocd-org/openocd.git
+cd openocd
+git submodule update --init --recursive
+./bootstrap
+./configure \
+  --prefix=$HOME/.local \
+  --enable-internal-jimtcl \
+  --enable-xds110 \
+  --enable-cmsis-dap \
+  --enable-ftdi \
+  --enable-stlink
+make -j
+sudo make install
+```
+
 ## How to Build
 
 ```sh
@@ -24,7 +54,7 @@ arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
 To flash using OpenOCD:
 
 ```sh
-openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset exit"
+openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset"
 ```
 
 ## mspm0c1104.ld
