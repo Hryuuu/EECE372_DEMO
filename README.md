@@ -1,38 +1,49 @@
 # EECE372 Bare-Metal Programming Examples
 
-Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written entirely with direct register access — no DriverLib or SysConfig.
+Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written entirely with direct register access without DriverLib or SysConfig.
 
-## Set-up Env
+Written by Hanseo Ryu.
 
-Install arm-none-eabi-gcc
-- macOS (Homebrew 필요)
+Contact: hsryu@postech.ac.kr
+
+- Some code was generated with Claude.
+- In such cases, it is explicitly marked in the code.
+
+## Environment Setup
+
+### Install `arm-none-eabi-gcc`
+
+#### macOS
+
+Requires Homebrew:
+
 ```sh
 brew install arm-none-eabi-gcc
 ```
-- Windows
-Downloads proper installiation file for your computer, and install. (May have to set up Envioment variable settings)
+
+#### Windows
+
+Download the appropriate installer for your system from the official Arm GNU Toolchain page, then complete the installation. You may also need to configure your `PATH` environment variable.
+
 https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
 
-Install openOCD
-배포판은 xds0 지원이 안되어 직접 빌드 필요
--macOS
+### Install OpenOCD
+
+#### macOS
+
 ```sh
-git clone https://github.com/openocd-org/openocd.git
-cd openocd
-git submodule update --init --recursive
-./bootstrap
-./configure \
-  --prefix=$HOME/.local \
-  --enable-internal-jimtcl \
-  --enable-xds110 \
-  --enable-cmsis-dap \
-  --enable-ftdi \
-  --enable-stlink
-make -j
-sudo make install
+brew install openocd --HEAD
 ```
 
+#### Windows
+
+Follow the official installation guide. You may need to install Node.js and npm first, and you may also need to configure your environment variables.
+
+https://xpack-dev-tools.github.io/openocd-xpack/docs/install/
+
 ## How to Build
+
+Run the following commands inside one of the example directories such as `ex_led/`, `ex_gpio/`, or `ex_dma/`.
 
 ```sh
 # Compile
@@ -47,26 +58,28 @@ arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
     -T mspm0c1104.ld -nostdlib -Wl,--gc-sections \
     startup_mspm0c1104.o main.o -o {name}.elf
 
-# Convert to raw binary
+# Convert to a raw binary
 arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
 ```
 
-To flash using OpenOCD:
+To flash the program with OpenOCD:
 
 ```sh
 openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset"
 ```
 
-## mspm0c1104.ld
+## File Overview
 
-Linker script that maps the MSPM0C1104 memory layout (16 KB Flash at `0x00000000`, 1 KB SRAM at `0x20000000`) and defines the `.isr_vector`, `.text`, `.data`, and `.bss` sections.
+### `mspm0c1104.ld`
 
-## startup_mspm0c1104.c
+This linker script defines the MSPM0C1104 memory layout: 16 KB of Flash at `0x00000000` and 1 KB of SRAM at `0x20000000`. It also places the `.isr_vector`, `.text`, `.data`, and `.bss` sections.
 
-Startup file that defines the interrupt vector table and `Reset_Handler`, which copies `.data` from Flash to SRAM, zeros `.bss`, then calls `main()`.
+### `startup_mspm0c1104.c`
+
+This startup file defines the interrupt vector table and `Reset_Handler`. On reset, it copies `.data` from Flash to SRAM, clears `.bss`, and then calls `main()`. Check the interrupt vector table for each example, because the required entries may differ depending on the example.
 
 ## Examples
 
-- **LED** (`ex_led/`): Blinks an LED on PA22 at ~0.5 Hz using a busy-wait delay loop and bare-metal GPIOA register access.
-- **GPIO** (`ex_gpio/`): Toggles the LED on PA22 on each falling-edge press of a button on PA16, handled via a GPIOA interrupt (NVIC IRQ1).
-- **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer (16 words) on channel 0. Turns the LED on solid if the transfer is verified correct, or blinks it rapidly on failure.
+- **LED** (`ex_led/`): Blinks an LED on PA22 at approximately 0.5 Hz using a busy-wait delay loop and direct GPIOA register access.
+- **GPIO** (`ex_gpio/`): Toggles the LED on PA22 whenever the button on PA16 is pressed on a falling edge, using a GPIOA interrupt (NVIC IRQ1).
+- **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer of 16 words on channel 0. The LED stays on if the transfer succeeds and blinks rapidly if verification fails.
