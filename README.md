@@ -72,19 +72,40 @@ Run the following commands inside one of the example directories, such as `ex_le
 
 ```sh
 # Compile
-arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
-    -Wall -Wextra -Werror -c startup_mspm0c1104.c -o startup_mspm0c1104.o
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -ffreestanding -fno-builtin \
+    -c startup_mspm0c1104.c -o startup_mspm0c1104.o
 
-arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
-    -Wall -Wextra -Werror -c main.c -o main.o
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -ffreestanding -fno-builtin \
+    -c main.c -o main.o
 
 # Link
-arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O2 -ffreestanding -fno-builtin \
+arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -ffreestanding -fno-builtin \
     -T mspm0c1104.ld -nostdlib -Wl,--gc-sections \
     startup_mspm0c1104.o main.o -o {name}.elf
 
-# Convert to raw binary
+# Convert to a raw binary (optional)
 arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
+```
+
+Build flag summary:
+
+- `-mcpu=cortex-m0plus`: Target the Arm Cortex-M0+ CPU.
+- `-mthumb`: Generate Thumb instruction set code.
+- `-O0`: Disable optimization for easier debugging.
+- `-ffreestanding`: Build for a bare-metal environment without a hosted runtime.
+- `-fno-builtin`: Do not replace standard functions with compiler built-ins.
+- `-c`: Compile only and produce an object file.
+- `-T mspm0c1104.ld`: Use the specified linker script.
+- `-nostdlib`: Do not link the standard C library or default startup files.
+- `-Wl,--gc-sections`: Remove unused sections during linking.
+- `-O binary`: Write the output as a raw binary image.
+
+## Debug
+
+Disassemble the ELF file to inspect the generated machine code and assembly.
+
+```sh
+arm-none-eabi-objdump -d {name}.elf
 ```
 
 ## Flash
@@ -92,8 +113,29 @@ arm-none-eabi-objcopy -O binary {name}.elf {name}.bin
 Use OpenOCD to program the ELF file:
 
 ```sh
-openocd -f ../openocd/mspm0c1104_xds110.cfg -c "program {name}.elf verify reset"
+openocd -f ../openocd/mspm0c1104_xds110.cfg 
 ```
+
+Open another shell.
+
+### macOS
+
+```sh
+nc localhost 4444
+program {name}.elf 
+verify 
+reset
+```
+
+### Windows
+
+```sh
+telnet localhost 4444
+program {name}.elf 
+verify 
+reset
+```
+
 
 ## Repository Structure
 
