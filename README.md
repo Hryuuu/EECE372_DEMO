@@ -118,7 +118,7 @@ openocd -f ../openocd/mspm0c1104_xds110.cfg
 
 Open another shell.
 
-### macOS
+#### macOS
 
 ```sh
 nc localhost 4444
@@ -127,7 +127,7 @@ verify
 reset
 ```
 
-### Windows
+#### Windows
 
 ```sh
 telnet localhost 4444
