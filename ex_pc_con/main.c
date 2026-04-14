@@ -1,7 +1,7 @@
 /*
 Name: Hanseo Ryu
 Date: 2026-4-14
-Description: 
+Description: Demonstrate direct program counter control by switching between two LED blink patterns.
 */
 #include <stdint.h>
 

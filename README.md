@@ -154,6 +154,7 @@ Because each example may require different interrupt handlers, check the vector 
 - **LED** (`ex_led/`): Blinks an LED on PA22 at approximately 0.5 Hz using a busy-wait delay loop and direct GPIOA register access.
 - **GPIO** (`ex_gpio/`): Toggles the LED on PA22 when the button on PA16 is pressed, using a falling-edge GPIOA interrupt (`NVIC IRQ1`).
 - **DMA** (`ex_dma/`): Performs a software-triggered memory-to-memory DMA transfer of 16 words on channel 0. The LED remains on if the transfer succeeds and blinks rapidly if verification fails.
+- **PC Control** (`ex_pc_con/`): Demonstrates direct program counter control by switching between two LED blink patterns with inline assembly.
 
 ## Notes
 
@@ -161,6 +162,7 @@ Because each example may require different interrupt handlers, check the vector 
 
 - OpenOCD can be used for general debugging tasks such as setting breakpoints, examining memory, and stepping through code.
 - If OpenOCD does not work as expected, build it directly from the official GitHub source and make sure the submodules are initialized.
+- If OpenOCD does not work on your system, you can use Texas Instruments UniFlash as an alternative for programming and device access.
 
 ### Document References
 
