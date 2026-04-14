@@ -123,7 +123,7 @@ Open another shell.
 ```sh
 nc localhost 4444
 program {name}.elf 
-verify 
+verify_image {name}.elf
 reset
 ```
 
@@ -132,7 +132,7 @@ reset
 ```sh
 telnet localhost 4444
 program {name}.elf 
-verify 
+verify_image {name}.elf
 reset
 ```
 
