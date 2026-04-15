@@ -80,7 +80,7 @@ arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -ffreestanding -fno-builtin \
 
 # Link
 arm-none-eabi-gcc -mcpu=cortex-m0plus -mthumb -O0 -ffreestanding -fno-builtin \
-    -T mspm0c1104.ld -nostdlib -Wl,--gc-sections \
+    -T mspm0c1104.ld -nostdlib \
     startup_mspm0c1104.o main.o -o {name}.elf
 
 # Convert to a raw binary (optional)
@@ -97,7 +97,6 @@ Build flag summary:
 - `-c`: Compile only and produce an object file.
 - `-T mspm0c1104.ld`: Use the specified linker script.
 - `-nostdlib`: Do not link the standard C library or default startup files.
-- `-Wl,--gc-sections`: Remove unused sections during linking.
 - `-O binary`: Write the output as a raw binary image.
 
 ## Debug
