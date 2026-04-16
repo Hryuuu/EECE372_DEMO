@@ -5,7 +5,7 @@ Minimal bare-metal examples for the TI MSPM0C1104 (ARM Cortex-M0+), written enti
 Written by Hanseo Ryu  
 Contact: hsryu@postech.ac.kr
 
-Some code in this repository was generated with Claude. Any such sections are explicitly marked in the source.
+Some code in this repository was generated with Claude (Anthropic, 2026). Any such sections are explicitly marked in the source.
 
 ## Overview
 
@@ -178,3 +178,7 @@ Because each example may require different interrupt handlers, check the vector 
   https://www.ti.com/kr/lit/pdf/slaaed1
 - Arm Cortex-M0+ User Guide  
   https://developer.arm.com/documentation/dui0662/latest/
+
+## Reference
+
+Anthropic. (2026). Claude (claude-sonnet-4-6) [Large language model]. https://claude.ai/
